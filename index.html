@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CECyTO Vial: reglamento y cuestionario de educación vial.">
+<title>CECyTO Vial</title>
+<style>
+:root{
+  --fondo:#f2f2f7; --texto:#25264a; --encabezado:#dcdaf5; --superficie:#ffffff;
+  --tarjeta:#f3f2fc; --borde:#d4d1eb; --primario:#7669c9; --primario-osc:#5d51aa;
+  --acento:#8b80d8; --tabla:#e4e1fa; --aviso:#eeecff;
+  --ok:#1f7a45; --ok-fondo:#e3f5ea; --mal:#b3261e; --mal-fondo:#fdeceb;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --fondo:#15152a; --texto:#ecebfa; --encabezado:#26254a; --superficie:#1e1d3a;
+    --tarjeta:#272646; --borde:#3d3b6b; --primario:#8b80d8; --primario-osc:#a79ee8;
+    --acento:#6a5fc4; --tabla:#2f2d56; --aviso:#2a2950;
+    --ok:#7ddba0; --ok-fondo:#18382a; --mal:#ff9d96; --mal-fondo:#44201e;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--fondo);color:var(--texto);min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--encabezado);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+header h1{font-size:24px}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{border:none;padding:10px 14px;background:var(--superficie);border-radius:6px;cursor:pointer;color:var(--texto);font-size:15px}
+nav button:hover{background:var(--acento);color:#fff}
+nav button[aria-current="page"]{background:var(--primario);color:#fff;font-weight:700}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+main{max-width:1100px;width:100%;margin:25px auto;padding:20px;flex:1}
+section{display:none;background:var(--superficie);padding:30px;border:1px solid var(--borde);border-radius:12px}
+section.activa{display:block}
+h2{margin-bottom:18px}
+h3{margin-bottom:8px}
+p{line-height:1.6;margin-bottom:14px}
+ul{margin:0 0 14px 22px;line-height:1.7}
+.boton{background:var(--primario);color:#fff;border:none;border-radius:7px;padding:12px 20px;cursor:pointer;margin:5px 6px 5px 0;font-size:15px}
+.boton:hover{background:var(--primario-osc)}
+.boton.sec{background:transparent;color:var(--texto);border:1px solid var(--borde)}
+.boton.sec:hover{background:var(--tarjeta)}
+.tarjetas{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-top:25px}
+.tarjeta{background:var(--tarjeta);border:1px solid var(--borde);padding:20px;border-radius:10px}
+.menu-reglamento{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.menu-reglamento .boton[aria-pressed="true"]{background:var(--primario-osc);outline:2px solid var(--acento)}
+.pregunta{border:1px solid var(--borde);padding:20px;border-radius:8px;margin-bottom:15px}
+.pregunta p{font-weight:700}
+.opcion{display:flex;align-items:flex-start;gap:10px;margin:8px 0;padding:8px 10px;border-radius:6px;cursor:pointer}
+.opcion:hover{background:var(--tarjeta)}
+.opcion input{width:auto;margin-top:5px;flex:none}
+.campo label{display:block;margin:12px 0 4px}
+.campo input{width:100%;padding:12px;border:1px solid var(--borde);border-radius:6px;background:var(--superficie);color:var(--texto);font-size:16px}
+.aviso{background:var(--aviso);padding:15px;border-radius:8px;margin-top:15px}
+.progreso{height:10px;background:var(--tabla);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.progreso div{height:100%;width:0;background:var(--primario);transition:width .3s}
+.revision{padding:14px 16px;border-radius:8px;margin-bottom:10px;border-left:5px solid}
+.revision.ok{background:var(--ok-fondo);border-color:var(--ok)}
+.revision.mal{background:var(--mal-fondo);border-color:var(--mal)}
+.revision p{margin:4px 0}
+.nota{font-size:2.2rem;font-weight:700;margin-bottom:6px}
+.tabla-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{padding:12px;border:1px solid var(--borde);text-align:left}
+th{background:var(--tabla)}
+footer{text-align:center;padding:20px;background:var(--encabezado);margin-top:30px}
+footer p{margin:2px 0}
+@media (max-width:600px){
+  header{flex-direction:column;align-items:flex-start}
+  main{padding:12px}
+  section{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚘 CECyTO Vial</h1>
+  <nav aria-label="Navegación principal">
+    <button data-ir="inicio">Inicio</button>
+    <button data-ir="reglamento">Reglamento</button>
+    <button data-ir="cuestionario">Cuestionario</button>
+    <button data-ir="resultados">Resultados</button>
+    <button data-ir="sesion" id="btnSesion">Iniciar sesión</button>
+    <button data-ir="perfil">Perfil</button>
+  </nav>
+</header>
+
+<main>
+  <section id="inicio" class="activa">
+    <h2>Bienvenido a CECyTO Vial</h2>
+    <p>Conduce con responsabilidad.</p>
+    <p>Conoce el reglamento vial y pon a prueba tus conocimientos.</p>
+    <button class="boton" data-ir="reglamento">Consultar reglamento</button>
+    <button class="boton" data-ir="cuestionario">Comenzar cuestionario</button>
+
+    <div class="tarjetas">
+      <div class="tarjeta"><h3>📘 Reglamento vial</h3><p>Consulta información sobre las faltas viales.</p></div>
+      <div class="tarjeta"><h3>📝 Cuestionario</h3><p>Practica tus conocimientos de seguridad vial.</p></div>
+      <div class="tarjeta"><h3>👤 Usuario</h3><p>Consulta tus resultados y tu historial.</p></div>
+    </div>
+  </section>
+
+  <section id="reglamento">
+    <h2>Reglamento vial</h2>
+    <p>Selecciona una categoría para consultar la información.</p>
+
+    <div class="menu-reglamento" id="menuFaltas"></div>
+
+    <div class="tarjeta" aria-live="polite">
+      <h3 id="tituloFalta">Faltas viales</h3>
+      <p id="textoFalta">Aquí se mostrará la información de cada categoría.</p>
+      <ul id="listaFalta"></ul>
+    </div>
+
+    <div class="aviso">
+      La información es de carácter educativo y general. Las sanciones y la clasificación definitiva
+      deben verificarse con el reglamento vial oficial aplicable al municipio de Villa Victoria.
+    </div>
+  </section>
+
+  <section id="cuestionario">
+    <h2>Cuestionario de conocimiento vial</h2>
+    <div class="progreso" aria-hidden="true"><div id="barra"></div></div>
+    <p id="contador">Contesta todas las preguntas.</p>
+
+    <form id="formularioQuiz" novalidate></form>
+    <p id="errorQuiz" role="alert" style="color:var(--mal);display:none">Te faltan preguntas por contestar.</p>
+  </section>
+
+  <section id="resultados">
+    <h2>Resultados del cuestionario</h2>
+    <div id="calificacion"><p>Aún no has realizado el cuestionario.</p></div>
+    <div id="revision"></div>
+    <button class="boton" data-ir="cuestionario" data-reiniciar>Volver a realizarlo</button>
+    <button class="boton sec" data-ir="inicio">Volver al inicio</button>
+  </section>
+
+  <section id="sesion">
+    <h2>Iniciar sesión</h2>
+    <form id="formSesion" class="campo" novalidate>
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" autocomplete="name" required>
+
+      <label for="correo">Correo electrónico</label>
+      <input type="email" id="correo" autocomplete="email" required>
+
+      <label for="contrasena">Contraseña</label>
+      <input type="password" id="contrasena" autocomplete="current-password" minlength="6" required>
+
+      <button class="boton" type="submit">Iniciar sesión</button>
+    </form>
+    <div class="aviso" id="mensajeSesion" role="status">
+      Vista de demostración. El acceso todavía no está conectado a una base de datos;
+      tu nombre y correo solo se guardan en este navegador y la contraseña nunca se almacena.
+    </div>
+  </section>
+
+  <section id="perfil">
+    <h2>Perfil e historial</h2>
+
+    <div class="tarjeta">
+      <h3>👤 Mi perfil</h3>
+      <p id="nombreUsuario">Usuario: No has iniciado sesión.</p>
+      <p id="mejorNota"></p>
+      <button class="boton sec" id="btnSalir" hidden>Cerrar sesión</button>
+    </div>
+
+    <h3 style="margin-top:25px">Historial de cuestionarios</h3>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Fecha</th><th>Actividad</th><th>Resultado</th></tr></thead>
+        <tbody id="historial"></tbody>
+      </table>
+    </div>
+    <button class="boton sec" id="btnBorrar" style="margin-top:15px">Borrar historial</button>
+  </section>
+</main>
+
+<footer>
+  <p>CECyTO Vial | Educación y responsabilidad vial</p>
+  <p>Proyecto escolar - Villa Victoria</p>
+</footer>
+
+<script>
+"use strict";
+
+/* ---------- Datos ---------- */
+const FALTAS = {
+  leves: {
+    titulo: "Faltas leves",
+    texto: "Infracciones de menor riesgo que, aun así, afectan el orden y la convivencia vial.",
+    items: [
+      "Estacionarse en lugares no permitidos.",
+      "No usar direccionales al dar vuelta o cambiar de carril.",
+      "Circular con las luces en mal estado.",
+      "No portar la licencia o la tarjeta de circulación."
+    ]
+  },
+  graves: {
+    titulo: "Faltas graves",
+    texto: "Conductas que ponen en riesgo la integridad de las personas.",
+    items: [
+      "No respetar la luz roja del semáforo.",
+      "No usar el cinturón de seguridad.",
+      "Usar el celular mientras se conduce.",
+      "Exceder los límites de velocidad.",
+      "No usar casco en motocicleta."
+    ]
+  },
+  muygraves: {
+    titulo: "Faltas muy graves",
+    texto: "Conductas de alto riesgo que pueden provocar lesiones graves o la muerte.",
+    items: [
+      "Conducir bajo los efectos del alcohol o de drogas.",
+      "Abandonar el lugar de un accidente.",
+      "Participar en arrancones o carreras en la vía pública.",
+      "Circular en sentido contrario."
+    ]
+  },
+  senales: {
+    titulo: "Señales de tránsito",
+    texto: "Las señales se clasifican según su función:",
+    items: [
+      "Preventivas: advierten de un peligro (curva, cruce peatonal, topes).",
+      "Restrictivas: indican una prohibición u obligación (alto, velocidad máxima, no estacionarse).",
+      "Informativas: orientan al usuario (destinos, servicios, distancias)."
+    ]
+  }
+};
+
+const PREGUNTAS = [
+  { q: "¿Por qué es importante respetar las señales de tránsito?",
+    o: ["Para prevenir accidentes.", "Para llegar más rápido.", "Para evitar usar el cinturón."], c: 0,
+    e: "Las señales ordenan la circulación y reducen el riesgo de choques y atropellos." },
+  { q: "¿Qué debes hacer antes de cruzar una calle?",
+    o: ["Cruzar sin mirar.", "Observar ambos lados y verificar que sea seguro.", "Correr entre los vehículos."], c: 1,
+    e: "Observar ambos lados te permite detectar vehículos que no alcanzas a escuchar o ver de inmediato." },
+  { q: "¿Qué debes hacer al conducir un vehículo?",
+    o: ["Utilizar el celular.", "Ignorar los semáforos.", "Respetar las normas de tránsito."], c: 2,
+    e: "Respetar las normas protege tu vida y la de los demás." },
+  { q: "¿Qué significa la luz roja de un semáforo?",
+    o: ["Avanzar con precaución.", "Detener la marcha por completo.", "Acelerar para pasar."], c: 1,
+    e: "La luz roja obliga a detenerse antes de la línea de alto." },
+  { q: "¿Cuándo se debe usar el cinturón de seguridad?",
+    o: ["Solo en carretera.", "Solo el conductor.", "Todos los ocupantes, en todo trayecto."], c: 2,
+    e: "El cinturón reduce de forma importante las lesiones graves, sin importar la distancia." },
+  { q: "¿Qué debe usar un motociclista?",
+    o: ["Casco de protección.", "Solo lentes.", "Nada, si el trayecto es corto."], c: 0,
+    e: "El casco protege la cabeza en caso de caída o choque." },
+  { q: "¿Qué hacer si vas a consumir bebidas alcohólicas?",
+    o: ["Manejar despacio.", "No conducir y designar a otro conductor.", "Tomar café antes de manejar."], c: 1,
+    e: "El alcohol disminuye reflejos y percepción; la única opción segura es no conducir." },
+  { q: "Una señal con forma de rombo amarillo suele ser:",
+    o: ["Preventiva.", "Informativa.", "De estacionamiento."], c: 0,
+    e: "Las señales preventivas advierten de peligros en la vía." }
+];
+
+const CLAVE_USUARIO = "cecytoVial.usuario";
+const CLAVE_HISTORIAL = "cecytoVial.historial";
+
+/* ---------- Almacenamiento seguro ---------- */
+function leer(clave, defecto) {
+  try {
+    const v = localStorage.getItem(clave);
+    return v ? JSON.parse(v) : defecto;
+  } catch (e) { return defecto; }
+}
+function guardar(clave, valor) {
+  try { localStorage.setItem(clave, JSON.stringify(valor)); } catch (e) { /* sin almacenamiento */ }
+}
+function borrar(clave) {
+  try { localStorage.removeItem(clave); } catch (e) { /* sin almacenamiento */ }
+}
+
+/* ---------- Navegación ---------- */
+function mostrar(id) {
+  if (!document.getElementById(id)) id = "inicio";
+  document.querySelectorAll("main section").forEach(s => s.classList.toggle("activa", s.id === id));
+  document.querySelectorAll("nav button").forEach(b => {
+    if (b.dataset.ir === id) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
+  });
+  if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+  window.scrollTo({ top: 0 });
+}
+
+document.addEventListener("click", function (e) {
+  const b = e.target.closest("[data-ir]");
+  if (!b) return;
+  if ("reiniciar" in b.dataset) construirQuiz();
+  mostrar(b.dataset.ir);
+});
+
+/* ---------- Reglamento ---------- */
+function verFalta(tipo) {
+  const f = FALTAS[tipo];
+  document.getElementById("tituloFalta").textContent = f.titulo;
+  document.getElementById("textoFalta").textContent = f.texto;
+  const lista = document.getElementById("listaFalta");
+  lista.replaceChildren(...f.items.map(t => {
+    const li = document.createElement("li");
+    li.textContent = t;
+    return li;
+  }));
+  document.querySelectorAll("#menuFaltas .boton").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.tipo === tipo)));
+}
+
+(function crearMenuFaltas() {
+  const menu = document.getElementById("menuFaltas");
+  Object.keys(FALTAS).forEach(tipo => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "boton";
+    b.dataset.tipo = tipo;
+    b.textContent = FALTAS[tipo].titulo;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => verFalta(tipo));
+    menu.appendChild(b);
+  });
+})();
+
+/* ---------- Cuestionario ---------- */
+let ordenActual = [];
+
+function mezclar(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function construirQuiz() {
+  const form = document.getElementById("formularioQuiz");
+  document.getElementById("errorQuiz").style.display = "none";
+
+  // Mezcla las opciones para que la respuesta correcta no siempre esté en el mismo lugar
+  ordenActual = PREGUNTAS.map(p => mezclar(p.o.map((_, i) => i)));
+
+  const piezas = PREGUNTAS.map((p, n) => {
+    const caja = document.createElement("fieldset");
+    caja.className = "pregunta";
+    caja.style.border = "1px solid var(--borde)";
+    const leyenda = document.createElement("legend");
+    leyenda.textContent = (n + 1) + ". " + p.q;
+    leyenda.style.fontWeight = "700";
+    leyenda.style.padding = "0 6px";
+    caja.appendChild(leyenda);
+
+    ordenActual[n].forEach(idx => {
+      const label = document.createElement("label");
+      label.className = "opcion";
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "p" + n;
+      radio.value = String(idx);
+      const span = document.createElement("span");
+      span.textContent = p.o[idx];
+      label.append(radio, span);
+      caja.appendChild(label);
+    });
+    return caja;
+  });
+
+  const enviar = document.createElement("button");
+  enviar.className = "boton";
+  enviar.type = "submit";
+  enviar.textContent = "Calificar cuestionario";
+
+  form.replaceChildren(...piezas, enviar);
+  actualizarProgreso();
+}
+
+function actualizarProgreso() {
+  const datos = new FormData(document.getElementById("formularioQuiz"));
+  let hechas = 0;
+  PREGUNTAS.forEach((_, n) => { if (datos.get("p" + n) !== null) hechas++; });
+  document.getElementById("barra").style.width = (hechas / PREGUNTAS.length * 100) + "%";
+  document.getElementById("contador").textContent =
+    "Contestadas: " + hechas + " de " + PREGUNTAS.length;
+}
+
+document.getElementById("formularioQuiz").addEventListener("change", actualizarProgreso);
+
+document.getElementById("formularioQuiz").addEventListener("submit", function (event) {
+  event.preventDefault();
+  const datos = new FormData(this);
+
+  const sinResponder = PREGUNTAS.findIndex((_, n) => datos.get("p" + n) === null);
+  if (sinResponder !== -1) {
+    const aviso = document.getElementById("errorQuiz");
+    aviso.textContent = "Te falta contestar la pregunta " + (sinResponder + 1) + ".";
+    aviso.style.display = "block";
+    this.querySelectorAll("fieldset")[sinResponder].scrollIntoView({ block: "center" });
+    return;
+  }
+
+  let puntos = 0;
+  const revision = document.getElementById("revision");
+  const tarjetas = PREGUNTAS.map((p, n) => {
+    const elegida = Number(datos.get("p" + n));
+    const acierto = elegida === p.c;
+    if (acierto) puntos++;
+
+    const div = document.createElement("div");
+    div.className = "revision " + (acierto ? "ok" : "mal");
+
+    const t = document.createElement("p");
+    t.style.fontWeight = "700";
+    t.textContent = (acierto ? "✅ " : "❌ ") + (n + 1) + ". " + p.q;
+    div.appendChild(t);
+
+    if (!acierto) {
+      const tu = document.createElement("p");
+      tu.textContent = "Tu respuesta: " + p.o[elegida];
+      div.appendChild(tu);
+    }
+    const ok = document.createElement("p");
+    ok.textContent = "Respuesta correcta: " + p.o[p.c];
+    const ex = document.createElement("p");
+    ex.textContent = p.e;
+    div.append(ok, ex);
+    return div;
+  });
+  revision.replaceChildren(...tarjetas);
+
+  const total = PREGUNTAS.length;
+  const porcentaje = Math.round(puntos / total * 100);
+  const mensaje = porcentaje === 100 ? "¡Excelente! Dominas el tema."
+    : porcentaje >= 70 ? "¡Buen trabajo! Repasa las preguntas que fallaste."
+    : "Te recomendamos repasar el reglamento e intentarlo de nuevo.";
+
+  const nota = document.createElement("div");
+  nota.className = "nota";
+  nota.textContent = puntos + " / " + total + " (" + porcentaje + "%)";
+  const msg = document.createElement("p");
+  msg.textContent = mensaje;
+  document.getElementById("calificacion").replaceChildren(nota, msg);
+
+  const historial = leer(CLAVE_HISTORIAL, []);
+  historial.unshift({ fecha: new Date().toISOString(), puntos: puntos, total: total });
+  guardar(CLAVE_HISTORIAL, historial.slice(0, 20));
+  pintarPerfil();
+
+  mostrar("resultados");
+});
+
+/* ---------- Sesión y perfil ---------- */
+document.getElementById("formSesion").addEventListener("submit", function (event) {
+  event.preventDefault();
+  const nombre = document.getElementById("nombre").value.trim();
+  const correo = document.getElementById("correo").value.trim();
+  const clave = document.getElementById("contrasena").value;
+  const msg = document.getElementById("mensajeSesion");
+
+  if (!nombre || !/^\S+@\S+\.\S+$/.test(correo)) {
+    msg.textContent = "Escribe tu nombre y un correo electrónico válido.";
+    return;
+  }
+  if (clave.length < 6) {
+    msg.textContent = "La contraseña debe tener al menos 6 caracteres.";
+    return;
+  }
+
+  guardar(CLAVE_USUARIO, { nombre: nombre, correo: correo });
+  this.reset(); // la contraseña no se guarda en ningún lado
+  msg.textContent = "Sesión de demostración iniciada. El acceso aún no está conectado a una base de datos.";
+  pintarPerfil();
+  mostrar("perfil");
+});
+
+document.getElementById("btnSalir").addEventListener("click", function () {
+  borrar(CLAVE_USUARIO);
+  pintarPerfil();
+});
+
+document.getElementById("btnBorrar").addEventListener("click", function () {
+  if (confirm("¿Seguro que quieres borrar tu historial?")) {
+    borrar(CLAVE_HISTORIAL);
+    pintarPerfil();
+  }
+});
+
+function pintarPerfil() {
+  const usuario = leer(CLAVE_USUARIO, null);
+  const historial = leer(CLAVE_HISTORIAL, []);
+
+  document.getElementById("nombreUsuario").textContent = usuario
+    ? "Usuario: " + usuario.nombre + " (" + usuario.correo + ")"
+    : "Usuario: No has iniciado sesión.";
+  document.getElementById("btnSalir").hidden = !usuario;
+  document.getElementById("btnSesion").textContent = usuario ? "Mi cuenta" : "Iniciar sesión";
+  document.getElementById("btnSesion").dataset.ir = usuario ? "perfil" : "sesion";
+
+  document.getElementById("mejorNota").textContent = historial.length
+    ? "Mejor resultado: " + Math.max(...historial.map(h => Math.round(h.puntos / h.total * 100))) + "%"
+    : "";
+
+  const cuerpo = document.getElementById("historial");
+  if (!historial.length) {
+    const fila = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 3;
+    td.textContent = "Aún no has realizado ningún cuestionario.";
+    fila.appendChild(td);
+    cuerpo.replaceChildren(fila);
+    return;
+  }
+  cuerpo.replaceChildren(...historial.map(h => {
+    const fila = document.createElement("tr");
+    const fecha = new Date(h.fecha).toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" });
+    [fecha, "Cuestionario vial", h.puntos + " de " + h.total].forEach(txt => {
+      const td = document.createElement("td");
+      td.textContent = txt;
+      fila.appendChild(td);
+    });
+    return fila;
+  }));
+}
+
+/* ---------- Inicio ---------- */
+construirQuiz();
+verFalta("leves");
+pintarPerfil();
+mostrar(location.hash.slice(1) || "inicio");
+window.addEventListener("hashchange", () => mostrar(location.hash.slice(1) || "inicio"));
+</script>
+</body>
+</html>
